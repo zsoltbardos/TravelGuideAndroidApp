@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Travel Guide</string>
+    <string name="home_title">Travel Guide</string>
+    <string name="search_hint">Search destinations...</string>
+    <string name="popular_destinations">Popular Destinations</string>
+    <string name="view_details">View Details</string>
+    <string name="rating">Rating: %1$s</string>
+    <string name="back">Back</string>
+    <string name="destination_not_found">Destination not found</string>
+    <string name="about">About</string>
+    <string name="points_of_interest">Points of Interest</string>
+    <string name="reviews">Reviews</string>
+    <string name="sample_review_1">Amazing place! I had a wonderful time exploring all the attractions. The food was incredible and the people were very friendly. Would definitely visit again!</string>
+    <string name="sample_review_2">Great destination, but a bit crowded during peak season. Still, the sights were breathtaking and worth the trip. I recommend visiting in the spring or fall for a better experience.</string>
+</resources>

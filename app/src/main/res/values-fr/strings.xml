@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Guide de Voyage</string>
+    <string name="home_title">Guide de Voyage</string>
+    <string name="search_hint">Rechercher des destinations...</string>
+    <string name="popular_destinations">Destinations Populaires</string>
+    <string name="view_details">Voir les Détails</string>
+    <string name="rating">Évaluation: %1$s</string>
+    <string name="back">Retour</string>
+    <string name="destination_not_found">Destination non trouvée</string>
+    <string name="about">À Propos</string>
+    <string name="points_of_interest">Points d\'Intérêt</string>
+    <string name="reviews">Avis</string>
+    <string name="sample_review_1">Endroit incroyable! J\'ai passé un moment merveilleux à explorer toutes les attractions. La nourriture était délicieuse et les gens étaient très sympathiques. Je reviendrais certainement!</string>
+    <string name="sample_review_2">Excellente destination, mais un peu bondée pendant la haute saison. Néanmoins, les sites étaient à couper le souffle et valaient le déplacement. Je recommande de visiter au printemps ou en automne pour une meilleure expérience.</string>
+    <string name="no_destinations_found">Aucune destination trouvée correspondant à votre recherche</string>
+    <string name="write_review">Écrire un Avis</string>
+    <string name="your_rating">Votre Évaluation</string>
+    <string name="your_name">Votre Nom</string>
+    <string name="your_review">Votre Avis</string>
+    <string name="submit_review">Soumettre l\'Avis</string>
+    <string name="add_review">Ajouter un Avis</string>
+    <string name="review_submitted">Avis soumis avec succès</string>
+    <string name="change_language">Changer de langue</string>
+    <string name="language_english">Anglais</string>
+    <string name="language_french">Français</string>
+</resources> 

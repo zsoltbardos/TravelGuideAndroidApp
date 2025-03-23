@@ -1,5 +1,7 @@
 package com.example.androidtravelapp
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,11 +13,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidtravelapp.ui.theme.AndroidTravelAppTheme
 import com.example.androidtravelapp.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.clickable
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,13 +50,27 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TravelAppNavigation() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    // State to trigger recomposition when language changes
+    var currentLocale by remember { mutableStateOf(Locale.getDefault()) }
+    val context = LocalContext.current
     
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    // Get string resources at composable context level
+    val reviewSubmittedMessage = stringResource(R.string.review_submitted)
+    
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { innerPadding ->
         when (val screen = currentScreen) {
             is Screen.Home -> {
                 TravelHomeScreen(
                     onDestinationClick = { destinationId ->
                         currentScreen = Screen.DestinationDetail(destinationId)
+                    },
+                    onLanguageChanged = { locale ->
+                        setLocale(context, locale)
+                        currentLocale = locale // Trigger recomposition
                     },
                     modifier = Modifier.padding(innerPadding)
                 )
@@ -58,7 +81,27 @@ fun TravelAppNavigation() {
                     onBackPressed = {
                         currentScreen = Screen.Home
                     },
+                    onAddReviewClick = { destinationId ->
+                        currentScreen = Screen.AddReview(destinationId)
+                    },
                     modifier = Modifier.padding(innerPadding)
+                )
+            }
+            is Screen.AddReview -> {
+                ReviewScreen(
+                    destinationId = screen.destinationId,
+                    onBackPressed = {
+                        currentScreen = Screen.DestinationDetail(screen.destinationId)
+                    },
+                    onReviewSubmitted = {
+                        currentScreen = Screen.DestinationDetail(screen.destinationId)
+                        // Launch coroutine to show snackbar using the message obtained at composable level
+                        CoroutineScope(Dispatchers.Main).launch {
+                            snackbarHostState.showSnackbar(
+                                message = reviewSubmittedMessage
+                            )
+                        }
+                    }
                 )
             }
         }
@@ -68,28 +111,82 @@ fun TravelAppNavigation() {
 sealed class Screen {
     object Home : Screen()
     data class DestinationDetail(val destinationId: Int) : Screen()
+    data class AddReview(val destinationId: Int) : Screen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelHomeScreen(
     onDestinationClick: (Int) -> Unit,
+    onLanguageChanged: (Locale) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var showLanguageMenu by remember { mutableStateOf(false) }
+    
+    // Filter destinations based on search query
+    val filteredDestinations = remember(searchQuery) {
+        if (searchQuery.isEmpty()) {
+            sampleDestinations
+        } else {
+            sampleDestinations.filter { destination ->
+                destination.name.contains(searchQuery, ignoreCase = true) ||
+                destination.location.contains(searchQuery, ignoreCase = true) ||
+                destination.description.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
     
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // App Title
-        Text(
-            text = stringResource(R.string.home_title),
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        // Top bar with app title and language button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // App Title
+            Text(
+                text = stringResource(R.string.home_title),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+            
+            // Language dropdown
+            Box {
+                IconButton(onClick = { showLanguageMenu = !showLanguageMenu }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.change_language)
+                    )
+                }
+                
+                DropdownMenu(
+                    expanded = showLanguageMenu,
+                    onDismissRequest = { showLanguageMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_english)) },
+                        onClick = {
+                            onLanguageChanged(Locale("en"))
+                            showLanguageMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.language_french)) },
+                        onClick = {
+                            onLanguageChanged(Locale("fr"))
+                            showLanguageMenu = false
+                        }
+                    )
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
         
         // Search Bar
         OutlinedTextField(
@@ -111,15 +208,33 @@ fun TravelHomeScreen(
             modifier = Modifier.padding(bottom = 8.dp)
         )
         
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(sampleDestinations) { destination ->
-                DestinationCard(
-                    destination = destination,
-                    onClick = { onDestinationClick(destination.id) },
-                    modifier = Modifier.padding(bottom = 16.dp)
+        if (filteredDestinations.isEmpty()) {
+            // Show message when no destinations match search
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_destinations_found),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
                 )
+            }
+        } else {
+            // Show filtered destinations
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(filteredDestinations) { destination ->
+                    DestinationCard(
+                        destination = destination,
+                        onClick = { onDestinationClick(destination.id) },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
             }
         }
     }
@@ -275,6 +390,19 @@ val sampleDestinations = listOf(
 @Composable
 fun TravelHomeScreenPreview() {
     AndroidTravelAppTheme {
-        TravelHomeScreen(onDestinationClick = {})
+        TravelHomeScreen(
+            onDestinationClick = {},
+            onLanguageChanged = {}
+        )
     }
+}
+
+// Function to change the locale using context
+fun setLocale(context: Context, locale: Locale) {
+    Locale.setDefault(locale)
+    val resources = context.resources
+    val config = Configuration(resources.configuration)
+    config.setLocale(locale)
+    context.createConfigurationContext(config)
+    resources.updateConfiguration(config, resources.displayMetrics)
 }

@@ -12,4 +12,15 @@
     <string name="reviews">Reviews</string>
     <string name="sample_review_1">Amazing place! I had a wonderful time exploring all the attractions. The food was incredible and the people were very friendly. Would definitely visit again!</string>
     <string name="sample_review_2">Great destination, but a bit crowded during peak season. Still, the sights were breathtaking and worth the trip. I recommend visiting in the spring or fall for a better experience.</string>
+    <string name="no_destinations_found">No destinations found matching your search</string>
+    <string name="write_review">Write a Review</string>
+    <string name="your_rating">Your Rating</string>
+    <string name="your_name">Your Name</string>
+    <string name="your_review">Your Review</string>
+    <string name="submit_review">Submit Review</string>
+    <string name="add_review">Add Review</string>
+    <string name="review_submitted">Review submitted successfully</string>
+    <string name="change_language">Change language</string>
+    <string name="language_english">English</string>
+    <string name="language_french">Français</string>
 </resources>

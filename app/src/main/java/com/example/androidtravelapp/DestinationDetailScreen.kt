@@ -25,6 +25,7 @@ import com.example.androidtravelapp.ui.theme.AndroidTravelAppTheme
 fun DestinationDetailScreen(
     destinationId: Int,
     onBackPressed: () -> Unit,
+    onAddReviewClick: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     // Find the destination by ID
@@ -143,11 +144,24 @@ fun DestinationDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             // Reviews Section
-            Text(
-                text = stringResource(R.string.reviews),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.reviews),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Button(
+                    onClick = { onAddReviewClick(destinationId) },
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(stringResource(R.string.add_review))
+                }
+            }
             
             Spacer(modifier = Modifier.height(8.dp))
             
@@ -248,7 +262,8 @@ fun DestinationDetailScreenPreview() {
     AndroidTravelAppTheme {
         DestinationDetailScreen(
             destinationId = 1,
-            onBackPressed = {}
+            onBackPressed = {},
+            onAddReviewClick = {}
         )
     }
 } 

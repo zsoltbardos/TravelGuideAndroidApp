@@ -6,10 +6,14 @@ import com.google.gson.annotations.SerializedName
  * Data model for authentication response from API
  */
 data class AuthResponse(
+    @SerializedName("userId")
+    val userId: Int,
+    @SerializedName("username")
+    val username: String,
+    @SerializedName("token")
     val accessToken: String,
-    val refreshToken: String,
-    val expiration: Long,
-    val userData: UserData
+    @SerializedName("refreshToken")
+    val refreshToken: String
 )
 
 /**
@@ -27,7 +31,7 @@ data class UserData(
  * Data model for login request
  */
 data class LoginRequest(
-    val username: String,
+    val email: String,
     val password: String
 )
 

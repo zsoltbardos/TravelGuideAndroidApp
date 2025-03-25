@@ -10,12 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
 fun AppDrawer(
     drawerState: DrawerState,
     onClose: () -> Unit,
     onDestinationSelected: (String) -> Unit,
+    onLogout: () -> Unit,
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
@@ -33,7 +35,7 @@ fun AppDrawer(
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
                     label = { Text("Home") },
                     selected = false,
                     onClick = { onDestinationSelected("home") },
@@ -41,7 +43,7 @@ fun AppDrawer(
                 )
                 
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                    icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings") },
                     label = { Text("Settings") },
                     selected = false,
                     onClick = { onDestinationSelected("settings") },
@@ -50,11 +52,17 @@ fun AppDrawer(
                 
                 Spacer(modifier = Modifier.weight(1f))
                 
+                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
+                
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Close, contentDescription = "Close") },
-                    label = { Text("Close") },
+                    icon = { Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout") },
+                    label = { Text("Logout") },
                     selected = false,
-                    onClick = onClose,
+                    onClick = {
+                        onLogout()
+                        onClose()
+                    },
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
             }

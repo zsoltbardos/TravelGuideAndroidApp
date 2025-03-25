@@ -2,12 +2,17 @@ package com.example.androidtravelapp.data.repository
 
 import com.example.androidtravelapp.data.api.AuthService
 import com.example.androidtravelapp.data.auth.TokenManager
+import com.example.androidtravelapp.data.model.ApiResponse
 import com.example.androidtravelapp.data.model.AuthResponse
 import com.example.androidtravelapp.data.model.LoginRequest
 import com.example.androidtravelapp.data.model.RefreshTokenRequest
 import com.example.androidtravelapp.data.model.RegisterRequest
 import com.example.androidtravelapp.data.model.UserData
 import com.example.androidtravelapp.util.NetworkResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,70 +32,130 @@ class AuthRepository @Inject constructor(
         )
     )
     
-    suspend fun login(username: String, password: String): NetworkResult<AuthResponse> {
-        return try {
-            val loginRequest = LoginRequest(username, password)
-            val response = authService.login(loginRequest)
-            
-            if (response.success && response.data != null) {
-                // Save tokens and user data
-                tokenManager.saveAuthData(
-                    accessToken = response.data.accessToken,
-                    refreshToken = response.data.refreshToken,
-                    expiration = response.data.expiration,
-                    userData = response.data.userData
-                )
-                
-                NetworkResult.Success(response.data)
-            } else {
-                NetworkResult.Error(response.message ?: "Login failed")
+    suspend fun login(email: String, password: String): NetworkResult<AuthResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = authService.login(LoginRequest(email, password))
+                if (response.success && response.data != null) {
+                    // Set a fixed expiration time of 2 hours
+                    val expiration = System.currentTimeMillis() + (2 * 60 * 60 * 1000)
+                    val userData = UserData(
+                        id = response.data.userId,
+                        username = response.data.username,
+                        email = email,
+                        firstName = response.data.username, // Using username as firstName since it's not provided
+                        lastName = "" // Empty lastName since it's not provided
+                    )
+                    tokenManager.saveAuthData(
+                        accessToken = response.data.accessToken,
+                        refreshToken = response.data.refreshToken,
+                        expiration = expiration,
+                        userData = userData
+                    )
+                    NetworkResult.Success(response.data)
+                } else {
+                    // Use the error message from the API response if available
+                    val errorMessage = response.message ?: "Login failed"
+                    val errors = response.errors
+                    NetworkResult.Error(errorMessage, errors)
+                }
+            } catch (e: HttpException) {
+                when (e.code()) {
+                    400 -> NetworkResult.Error("Invalid email or password format")
+                    401 -> NetworkResult.Error("Invalid email or password")
+                    403 -> NetworkResult.Error("Account is locked")
+                    404 -> NetworkResult.Error("Account not found")
+                    429 -> NetworkResult.Error("Too many login attempts. Please try again later")
+                    else -> NetworkResult.Error("Server error: ${e.message()}")
+                }
+            } catch (e: IOException) {
+                NetworkResult.Error("Network error: Please check your internet connection")
+            } catch (e: Exception) {
+                NetworkResult.Error("An unexpected error occurred: ${e.message}")
             }
-        } catch (e: Exception) {
-            NetworkResult.Error("Network error: ${e.message}")
         }
     }
     
-    suspend fun register(registerRequest: RegisterRequest): NetworkResult<AuthResponse> {
-        return try {
-            val response = authService.register(registerRequest)
-            
-            if (response.success && response.data != null) {
-                // Save tokens and user data
-                tokenManager.saveAuthData(
-                    accessToken = response.data.accessToken,
-                    refreshToken = response.data.refreshToken,
-                    expiration = response.data.expiration,
-                    userData = response.data.userData
-                )
-                
-                NetworkResult.Success(response.data)
-            } else {
-                NetworkResult.Error(response.message ?: "Registration failed")
+    suspend fun register(request: RegisterRequest): NetworkResult<AuthResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = authService.register(request)
+                if (response.success && response.data != null) {
+                    // Set a fixed expiration time of 2 hours
+                    val expiration = System.currentTimeMillis() + (2 * 60 * 60 * 1000)
+                    val userData = UserData(
+                        id = response.data.userId,
+                        username = response.data.username,
+                        email = request.email,
+                        firstName = request.firstName,
+                        lastName = request.lastName
+                    )
+                    tokenManager.saveAuthData(
+                        accessToken = response.data.accessToken,
+                        refreshToken = response.data.refreshToken,
+                        expiration = expiration,
+                        userData = userData
+                    )
+                    NetworkResult.Success(response.data)
+                } else {
+                    // Use the error message from the API response if available
+                    val errorMessage = response.message ?: "Registration failed"
+                    val errors = response.errors
+                    NetworkResult.Error(errorMessage, errors)
+                }
+            } catch (e: HttpException) {
+                when (e.code()) {
+                    400 -> NetworkResult.Error("Invalid registration data")
+                    409 -> NetworkResult.Error("Email or username already exists")
+                    422 -> NetworkResult.Error("Invalid input data")
+                    else -> NetworkResult.Error("Server error: ${e.message()}")
+                }
+            } catch (e: IOException) {
+                NetworkResult.Error("Network error: Please check your internet connection")
+            } catch (e: Exception) {
+                NetworkResult.Error("An unexpected error occurred: ${e.message}")
             }
-        } catch (e: Exception) {
-            NetworkResult.Error("Network error: ${e.message}")
         }
     }
     
     suspend fun refreshToken(refreshToken: String): NetworkResult<AuthResponse> {
-        return try {
-            val refreshTokenRequest = RefreshTokenRequest(refreshToken)
-            val response = authService.refreshToken(refreshTokenRequest)
-            
-            if (response.success && response.data != null) {
-                // Update tokens but keep the same user data
-                tokenManager.updateTokens(
-                    accessToken = response.data.accessToken,
-                    refreshToken = response.data.refreshToken,
-                    expiration = response.data.expiration
-                )
-                
-                NetworkResult.Success(response.data)
-            } else {
-                NetworkResult.Error(response.message ?: "Token refresh failed")
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = authService.refreshToken(RefreshTokenRequest(refreshToken))
+                if (response.success && response.data != null) {
+                    // Set a fixed expiration time of 2 hours
+                    val expiration = System.currentTimeMillis() + (2 * 60 * 60 * 1000)
+                    val userData = UserData(
+                        id = response.data.userId,
+                        username = response.data.username,
+                        email = "", // Empty email since it's not provided in refresh token response
+                        firstName = response.data.username, // Using username as firstName since it's not provided
+                        lastName = "" // Empty lastName since it's not provided
+                    )
+                    tokenManager.saveAuthData(
+                        accessToken = response.data.accessToken,
+                        refreshToken = response.data.refreshToken,
+                        expiration = expiration,
+                        userData = userData
+                    )
+                    NetworkResult.Success(response.data)
+                } else {
+                    // Use the error message from the API response if available
+                    val errorMessage = response.message ?: "Token refresh failed"
+                    val errors = response.errors
+                    NetworkResult.Error(errorMessage, errors)
+                }
+            } catch (e: HttpException) {
+                when (e.code()) {
+                    401 -> NetworkResult.Error("Invalid refresh token")
+                    403 -> NetworkResult.Error("Refresh token expired")
+                    else -> NetworkResult.Error("Server error: ${e.message()}")
+                }
+            } catch (e: IOException) {
+                NetworkResult.Error("Network error: Please check your internet connection")
+            } catch (e: Exception) {
+                NetworkResult.Error("An unexpected error occurred: ${e.message}")
             }
-        } catch (e: Exception) {
-            NetworkResult.Error("Network error: ${e.message}")
         }
     }
     

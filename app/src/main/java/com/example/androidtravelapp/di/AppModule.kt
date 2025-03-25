@@ -5,10 +5,12 @@ import com.example.androidtravelapp.data.api.ApiModule
 import com.example.androidtravelapp.data.api.AuthService
 import com.example.androidtravelapp.data.api.DestinationService
 import com.example.androidtravelapp.data.api.ReviewService
+import com.example.androidtravelapp.data.auth.AuthState
 import com.example.androidtravelapp.data.auth.TokenManager
 import com.example.androidtravelapp.data.repository.AuthRepository
 import com.example.androidtravelapp.data.repository.DestinationRepository
 import com.example.androidtravelapp.data.repository.ReviewRepository
+import com.example.androidtravelapp.data.auth.TokenRefreshManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,5 +62,23 @@ object AppModule {
     @Singleton
     fun provideReviewRepository(reviewService: ReviewService): ReviewRepository {
         return ReviewRepository(reviewService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthState(
+        tokenManager: TokenManager,
+        tokenRefreshManager: TokenRefreshManager
+    ): AuthState {
+        return AuthState(tokenManager, tokenRefreshManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenRefreshManager(
+        authRepository: AuthRepository,
+        tokenManager: TokenManager
+    ): TokenRefreshManager {
+        return TokenRefreshManager(authRepository, tokenManager)
     }
 } 

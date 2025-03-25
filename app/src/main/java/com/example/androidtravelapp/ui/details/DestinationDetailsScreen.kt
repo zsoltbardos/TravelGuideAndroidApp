@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,6 +36,7 @@ import java.util.Locale
 fun DestinationDetailsScreen(
     destinationId: Int,
     onBackClick: () -> Unit,
+    onMenuClick: () -> Unit,
     currentLocale: Locale = Locale.getDefault(),
     viewModel: DestinationDetailsViewModel = hiltViewModel()
 ) {
@@ -79,6 +81,14 @@ fun DestinationDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onMenuClick) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = stringResource(R.string.open_menu)
+                        )
                     }
                 }
             )

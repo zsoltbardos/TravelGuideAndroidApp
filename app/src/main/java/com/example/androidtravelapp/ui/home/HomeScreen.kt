@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -33,6 +35,8 @@ import java.util.Locale
 fun HomeScreen(
     onDestinationClick: (Int) -> Unit,
     onLanguageChanged: (Locale) -> Unit,
+    onMenuClick: () -> Unit,
+    currentLocale: Locale = Locale.getDefault(),
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -64,165 +68,194 @@ fun HomeScreen(
             }
     }
     
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Top bar with app title and language button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // App Title
-            Text(
-                text = stringResource(R.string.home_title),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-            
-            // Language dropdown
-            Box {
-                IconButton(onClick = { showLanguageMenu = !showLanguageMenu }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = stringResource(R.string.change_language)
-                    )
-                }
-                
-                DropdownMenu(
-                    expanded = showLanguageMenu,
-                    onDismissRequest = { showLanguageMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.language_english)) },
-                        onClick = {
-                            onLanguageChanged(Locale("en"))
-                            showLanguageMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.language_french)) },
-                        onClick = {
-                            onLanguageChanged(Locale("fr"))
-                            showLanguageMenu = false
-                        }
-                    )
-                }
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Search Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier
-                    .weight(1f),
-                placeholder = { Text(stringResource(R.string.search_hint)) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(
-                    onSearch = { viewModel.executeSearch() }
-                )
-            )
-            
-            Spacer(modifier = Modifier.width(8.dp))
-            
-            Button(
-                onClick = { viewModel.executeSearch() },
-                modifier = Modifier.height(56.dp)
-            ) {
-                Text(stringResource(R.string.search_button))
-            }
-        }
-        
-        // Error message
-        if (error != null) {
-            ErrorMessage(
-                message = error!!,
-                onRetry = { viewModel.refreshDestinations() }
-            )
-        } else if (isLoading && destinations.isEmpty()) {
-            // Show loading indicator when initially loading
-            LoadingIndicator()
-        } else {
-            // Content
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (popularDestinations.isNotEmpty() && activeSearchTerm.isEmpty()) {
-                    item {
-                        PopularDestinationsSection(
-                            popularDestinations = popularDestinations,
-                            onDestinationClick = onDestinationClick
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.home_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onMenuClick) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = stringResource(R.string.open_menu)
                         )
                     }
-                }
-                
-                item {
-                    // Featured Destinations
-                    Text(
-                        text = if (activeSearchTerm.isEmpty()) 
-                            stringResource(R.string.popular_destinations)
-                        else 
-                            stringResource(R.string.search_results),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
-                    )
-                }
-                
-                if (destinations.isEmpty() && !isLoading) {
-                    // Show message when no destinations match search
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            contentAlignment = Alignment.Center
+                },
+                actions = {
+                    Box {
+                        IconButton(onClick = { showLanguageMenu = !showLanguageMenu }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(R.string.change_language)
+                            )
+                        }
+                        
+                        DropdownMenu(
+                            expanded = showLanguageMenu,
+                            onDismissRequest = { showLanguageMenu = false }
                         ) {
-                            Text(
-                                text = stringResource(R.string.no_destinations_found),
-                                fontSize = 16.sp,
-                                color = Color.Gray
+                            DropdownMenuItem(
+                                text = { 
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(stringResource(R.string.language_english))
+                                        if (currentLocale.language == "en") {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    onLanguageChanged(Locale("en"))
+                                    showLanguageMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { 
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(stringResource(R.string.language_french))
+                                        if (currentLocale.language == "fr") {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    onLanguageChanged(Locale("fr"))
+                                    showLanguageMenu = false
+                                }
                             )
                         }
                     }
-                } else {
-                    // Show destinations
-                    items(destinations) { destination ->
-                        DestinationCard(
-                            destination = destination,
-                            onClick = { onDestinationClick(destination.id) },
-                            modifier = Modifier.padding(bottom = 16.dp)
+                }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            // Search Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { viewModel.updateSearchQuery(it) },
+                    modifier = Modifier
+                        .weight(1f),
+                    placeholder = { Text(stringResource(R.string.search_hint)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = { viewModel.executeSearch() }
+                    )
+                )
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                Button(
+                    onClick = { viewModel.executeSearch() },
+                    modifier = Modifier.height(56.dp)
+                ) {
+                    Text(stringResource(R.string.search_button))
+                }
+            }
+            
+            // Error message
+            if (error != null) {
+                ErrorMessage(
+                    message = error!!,
+                    onRetry = { viewModel.refreshDestinations() }
+                )
+            } else if (isLoading && destinations.isEmpty()) {
+                // Show loading indicator when initially loading
+                LoadingIndicator()
+            } else {
+                // Content
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (popularDestinations.isNotEmpty() && activeSearchTerm.isEmpty()) {
+                        item {
+                            PopularDestinationsSection(
+                                popularDestinations = popularDestinations,
+                                onDestinationClick = onDestinationClick
+                            )
+                        }
+                    }
+                    
+                    item {
+                        // Featured Destinations
+                        Text(
+                            text = if (activeSearchTerm.isEmpty()) 
+                                stringResource(R.string.popular_destinations)
+                            else 
+                                stringResource(R.string.search_results),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
                         )
                     }
                     
-                    // Show loading indicator when loading more items
-                    if (isLoading) {
+                    if (destinations.isEmpty() && !isLoading) {
+                        // Show message when no destinations match search
                         item {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp),
+                                    .height(200.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(32.dp)
+                                Text(
+                                    text = stringResource(R.string.no_destinations_found),
+                                    fontSize = 16.sp,
+                                    color = Color.Gray
                                 )
+                            }
+                        }
+                    } else {
+                        // Show destinations
+                        items(destinations) { destination ->
+                            DestinationCard(
+                                destination = destination,
+                                onClick = { onDestinationClick(destination.id) },
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                        
+                        // Show loading indicator when loading more items
+                        if (isLoading) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
                             }
                         }
                     }

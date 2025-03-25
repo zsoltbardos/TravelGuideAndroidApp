@@ -88,8 +88,8 @@ class DestinationRepository @Inject constructor(
 
     suspend fun getDestinations(page: Int = 1, pageSize: Int = 10): NetworkResult<List<Destination>> {
         return try {
-            // We found out that adding query parameters causes 500 errors
-            // So we'll use the endpoint without parameters
+            // adding query parameters causes 500 errors
+            // use the endpoint without parameters
             val response = destinationService.getAllDestinations(
                 pageNumber = null,
                 pageSize = null,

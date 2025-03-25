@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.*
 import com.example.androidtravelapp.navigation.AppNavigation
 import com.example.androidtravelapp.ui.theme.AndroidTravelAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,8 @@ import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private var currentLocale by mutableStateOf(Locale.getDefault())
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,7 +25,14 @@ class MainActivity : ComponentActivity() {
         try {
             setContent {
                 AndroidTravelAppTheme {
-                    AppNavigation()
+                    AppNavigation(
+                        currentLocale = currentLocale,
+                        onLocaleChanged = { newLocale ->
+                            currentLocale = newLocale
+                            setLocale(this, newLocale)
+                            recreate() // Recreate the activity to apply the new locale
+                        }
+                    )
                 }
             }
         } catch (e: Exception) {

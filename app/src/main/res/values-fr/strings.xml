@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="menu_home">Accueil</string>
+    <string name="menu_settings">Paramètres</string>
     <string name="app_name">Guide de Voyage</string>
     <string name="home_title">Guide de Voyage</string>
     <string name="search_hint">Rechercher des destinations...</string>
@@ -37,7 +39,15 @@
     <string name="first_name">Prénom</string>
     <string name="last_name">Nom</string>
     <string name="register_button">S\'inscrire</string>
-    <string name="login_link">Vous avez déjà un compte ? Se connecter</string>
     <string name="register_error">L\'inscription a échoué. Veuillez réessayer.</string>
     <string name="register_success">Inscription réussie</string>
+    <string name="search_button">Rechercher</string>
+    <string name="featured_destinations">Destinations en vedette</string>
+    <string name="retry">Réessayer</string>
+    <string name="search_results">Résultats de la recherche</string>
+    <string name="network_error">Erreur réseau. Veuillez vérifier votre connexion.</string>
+    <string name="server_error">Erreur du serveur. Veuillez réessayer plus tard.</string>
+    <string name="unknown_error">Erreur inconnue. Veuillez réessayer.</string>
+    <string name="loading">Chargement...</string>
+    <string name="no_reviews_yet">Pas encore d\'avis</string>
 </resources> 

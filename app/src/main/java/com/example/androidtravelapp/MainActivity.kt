@@ -36,19 +36,24 @@ class MainActivity : ComponentActivity() {
         
         try {
             setContent {
-                AndroidTravelAppTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        AppNavigation(
-                            startDestination = AppDestination.Login.route,
-                            currentLocale = currentLocale,
-                            authState = authState
-                        )
-                    }
-                }
-            }
+    AndroidTravelAppTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            AppNavigation(
+                startDestination = AppDestination.Login.route,
+                currentLocale = currentLocale,
+                onLocaleChanged = { locale ->
+    setLocale(this, locale)
+    currentLocale = locale
+    recreate() // Force activity refresh after language change
+},
+                authState = authState
+            )
+        }
+    }
+}
         } catch (e: Exception) {
             // Log the exception
             Log.e("MainActivity", "Error during app initialization", e)

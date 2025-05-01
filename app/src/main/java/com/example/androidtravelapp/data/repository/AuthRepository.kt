@@ -61,8 +61,8 @@ class AuthRepository @Inject constructor(
                 }
             } catch (e: HttpException) {
                 when (e.code()) {
-                    400 -> NetworkResult.Error("Invalid email or password format")
-                    401 -> NetworkResult.Error("Invalid email or password")
+                    400 -> NetworkResult.Error("Invalid Credentials")
+                    401 -> NetworkResult.Error("Invalid Credentials")
                     403 -> NetworkResult.Error("Account is locked")
                     404 -> NetworkResult.Error("Account not found")
                     429 -> NetworkResult.Error("Too many login attempts. Please try again later")

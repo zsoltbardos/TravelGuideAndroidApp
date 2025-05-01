@@ -9,6 +9,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import com.example.androidtravelapp.R
 
 @Composable
@@ -31,12 +33,11 @@ fun LoginScreen(
         }
     }
     
-    // Clear error when user starts typing
-    LaunchedEffect(email, password) {
-        if (error != null) {
-            viewModel.clearError()
-        }
-    }
+    // LaunchedEffect(email, password) {
+    //     if (error != null) {
+    //         viewModel.clearError()
+    //     }
+    // }
     
     Column(
         modifier = Modifier
@@ -57,7 +58,8 @@ fun LoginScreen(
             label = { Text(stringResource(R.string.email)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .semantics { testTag = "email_field" },
             singleLine = true,
             isError = error != null
         )
@@ -69,7 +71,8 @@ fun LoginScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = 24.dp)
+                .semantics { testTag = "password_field" },
             singleLine = true,
             isError = error != null
         )
@@ -91,7 +94,8 @@ fun LoginScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(50.dp)
+                .semantics { testTag = "login_button" },
             enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
         ) {
             if (isLoading) {
@@ -106,7 +110,9 @@ fun LoginScreen(
         
         TextButton(
             onClick = onRegisterClick,
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .semantics { testTag = "register_link" }
         ) {
             Text(stringResource(R.string.register_link))
         }

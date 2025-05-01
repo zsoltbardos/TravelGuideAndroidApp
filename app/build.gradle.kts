@@ -17,7 +17,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.androidtravelapp.HiltTestRunner"
     }
 
     buildTypes {
@@ -42,6 +42,21 @@ android {
     lint {
         abortOnError = false
         disable += "MissingTranslation"
+    }
+
+    // Setup for Compose UI testing
+    testOptions {
+        animationsDisabled = true
+    }
+    
+    // Add packaging options to resolve conflicts
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/LICENSE.md"
+            excludes += "/META-INF/LICENSE-notice.md"
+            pickFirsts += "/META-INF/LICENSE*"
+        }
     }
 }
 
@@ -92,4 +107,28 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    
+    // Android Testing
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1") 
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+    
+    // AndroidX Test
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    
+    // Hilt testing
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
+    
+    // Truth assertion library
+    androidTestImplementation("com.google.truth:truth:1.1.5")
+    
+    // Mockito for mocking in tests
+    androidTestImplementation("org.mockito:mockito-core:5.4.0")
+    androidTestImplementation("org.mockito:mockito-android:5.4.0")
 }

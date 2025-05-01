@@ -4,7 +4,38 @@
     <selectionStates>
       <SelectionState runConfigName="AndroidTravelApp.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-29T16:41:40.582608400Z">
+        <DropdownSelection timestamp="2025-04-30T13:35:50.401559900Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\zsolt\.android\avd\Pixel_9_Pro_API_35wergasgeawgaggawgewa.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="All Tests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="LoginTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-04-30T11:52:08.223963400Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\zsolt\.android\avd\Pixel_9_Pro_API_35wergasgeawgaggawgewa.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="test5_RegisterLinkNavigatesToRegisterScreen()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="test2_LoginWithInvalidEmail_ShowsInvalidCredentialsMessage()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="test5_LogoutFromDrawerMenu_ReturnsToLoginScreen()">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-04-30T13:52:52.376761900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\zsolt\.android\avd\Pixel_9_Pro_API_35wergasgeawgaggawgewa.avd" />

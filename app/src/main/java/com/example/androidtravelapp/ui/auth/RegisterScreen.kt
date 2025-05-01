@@ -11,6 +11,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import com.example.androidtravelapp.R
 
 @Composable
@@ -63,7 +65,8 @@ fun RegisterScreen(
             label = { Text(stringResource(R.string.username)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .semantics { testTag = "username_field" },
             enabled = !isLoading
         )
         
@@ -73,7 +76,8 @@ fun RegisterScreen(
             label = { Text(stringResource(R.string.email)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .semantics { testTag = "email_field" },
             enabled = !isLoading
         )
         
@@ -84,7 +88,8 @@ fun RegisterScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .semantics { testTag = "password_field" },
             enabled = !isLoading
         )
         
@@ -94,7 +99,8 @@ fun RegisterScreen(
             label = { Text(stringResource(R.string.first_name)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .semantics { testTag = "first_name_field" },
             enabled = !isLoading
         )
         
@@ -104,7 +110,8 @@ fun RegisterScreen(
             label = { Text(stringResource(R.string.last_name)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = 24.dp)
+                .semantics { testTag = "last_name_field" },
             enabled = !isLoading
         )
         
@@ -128,7 +135,8 @@ fun RegisterScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(50.dp)
+                .semantics { testTag = "register_button" },
             enabled = !isLoading && 
                      username.isNotBlank() && 
                      email.isNotBlank() && 
@@ -148,7 +156,9 @@ fun RegisterScreen(
         
         TextButton(
             onClick = onLoginClick,
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .semantics { testTag = "login_link" },
             enabled = !isLoading
         ) {
             Text(stringResource(R.string.login_link))
